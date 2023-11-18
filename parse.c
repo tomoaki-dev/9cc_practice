@@ -108,7 +108,12 @@ Token *tokenize() {
         }
 
         if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+            char *q = p;
+            while(('a' <= *p && *p <= 'z') || isdigit(*p)){
+                p++;
+            }
+            cur = new_token(TK_IDENT, cur, q, 0);
+            cur->len = p - q;
             continue;
         }
 
@@ -117,4 +122,16 @@ Token *tokenize() {
 
     new_token(TK_EOF, cur, p, 0);
     return head.next;
+}
+
+
+// 変数を名前で検索する。見つからなかった場合はNULLを返す。
+LVar *find_lvar(Token *tok) {
+    for (LVar *var = locals; var; var = var->next) {
+        // printf("var->len: %d, var->name: %s, var->offset: %d, \n", var->len, var->name, var->offset);
+        if (var->len == tok->len && memcmp(tok->str, var->name, var->len)==0)
+            return var;
+    }
+        
+    return NULL;
 }

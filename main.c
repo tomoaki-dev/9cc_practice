@@ -9,6 +9,7 @@ int main(int argc, char **argv){
     // トークナイズしてパースする
     user_input = argv[1];
     token = tokenize(user_input);
+    locals = calloc(1, sizeof(LVar));
     program();
 
     // アセンブリの前半部分を出力
@@ -20,7 +21,7 @@ int main(int argc, char **argv){
     // 変数26個分の領域を確保する
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
+    printf("  sub rsp, 208\n\n");
 
     // 先頭の式から順にコードを生成
     for (int i=0; code[i]; i++) {
@@ -28,7 +29,7 @@ int main(int argc, char **argv){
 
         // 指揮の評価結果としてスタックに一つの値が残っているはずなので
         // スタックが溢れないようにpopしておく
-        printf("  pop rax\n");
+        printf("  pop rax\n\n");
     }
     
     // エピローグ
