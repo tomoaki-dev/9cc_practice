@@ -11,7 +11,7 @@ void error_at(char *loc, char *fmt, ...) {
     fprintf(stderr, "%*s", pos, " "); // pos個の空白を出力
     fprintf(stderr, "^ ");
     vfprintf(stderr, fmt, ap);
-    fprintf(stderr, "%d", pos);
+    // fprintf(stderr, "%d", pos);
     fprintf(stderr, "\n");
     exit(1);
 }
@@ -25,6 +25,14 @@ bool consume(char *op) {
         return false;
     token = token->next;
     return true;
+}
+
+Token *consume_ident() {
+    if (token->kind != TK_IDENT)
+        return NULL;
+    Token *tok = token;
+    token = token->next;
+    return tok;
 }
 
 // 次のトークンが期待している記号の時には、トークンを1つ読み進める。
@@ -86,7 +94,7 @@ Token *tokenize() {
             continue;
         }
 
-        if (strchr("+-*/()<>", *p)) {
+        if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
@@ -96,6 +104,11 @@ Token *tokenize() {
             char *q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
+            continue;
+        }
+
+        if ('a' <= *p && *p <= 'z') {
+            cur = new_token(TK_IDENT, cur, p++, 1);
             continue;
         }
 
